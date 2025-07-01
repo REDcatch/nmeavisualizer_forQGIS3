@@ -1,0 +1,14 @@
+[general]
+name=NMEA Visualizer
+qgisMinimumVersion=3.0
+description=Reads NMEA GNSS data and visualizes quality, geometry and uncertainty
+version=0.5
+author=REDcatch GmbH.
+email=support@redcatch.at
+icon=icon.png
+category=Vector
+about=This plugin allows to load one NMEA style *.nmea or *.txt file to analyse the GNGGA, GNGST and GNRMC lines.
+tags=vector, nmea, GNGGA, gps, points
+homepage=https://www.redcatch.at/qgisvolume/
+tracker=https://redcatch.at/contact/
+repository=https://github.com/redcatch/nmeavisualizer_forQGIS3
