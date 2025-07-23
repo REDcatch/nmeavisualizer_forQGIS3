@@ -3,9 +3,11 @@ name=nmeavisualizer_gui
 qgisMinimumVersion=3.0
 qgisMaximumVersion=3.99
 description=Visualize NMEA GNSS logs and optionally export to GPKG/SHP/KML
-version=1.1
+version=0.6
 author=REDcatch GmbH
 email=office@redcatch.at
 homepage=https://www.redcatch.at/qgisnmea/
 tracker=https://www.redcatch.at/qgisnmea/
 repository=https://github.com/REDcatch/nmeavisualizer_forQGIS3
+about=Opens any GNSS nmea style file and adds it to map and optionally export to GPKG/SHP/KML
+
