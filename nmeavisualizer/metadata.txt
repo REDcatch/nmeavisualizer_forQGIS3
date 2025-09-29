@@ -2,8 +2,9 @@
 name=nmeavisualizer_gui
 qgisMinimumVersion=3.0
 qgisMaximumVersion=3.99
+supportsQt6=True
 description=Visualize NMEA GNSS logs and optionally export to GPKG/SHP/KML
-version=0.6
+version=0.7
 author=REDcatch GmbH
 email=office@redcatch.at
 homepage=https://www.redcatch.at/qgisnmea/

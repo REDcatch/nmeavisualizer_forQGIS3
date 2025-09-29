@@ -12,8 +12,8 @@ from qgis.core import (
     QgsCategorizedSymbolRenderer,
     QgsVectorFileWriter
 )
-from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtGui import QColor, QIcon
+from qgis.PyQt.QtCore import QVariant
 
 class NmeaVisualizerPlugin:
     def __init__(self, iface):
@@ -54,7 +54,7 @@ class NmeaVisualizerPlugin:
             return None
 
     def run(self):
-        file_path, _ = QFileDialog.getOpenFileName(None, "Select NMEA file", "", "NMEA Files (*.nmea *.txt)")
+        file_path, _ = QFileDialog.getOpenFileName(None, "Select NMEA file", "", "NMEA Files (*.nmea *.txt *.log)")
         if not file_path:
             return
 
@@ -81,12 +81,17 @@ class NmeaVisualizerPlugin:
         export_kml = chk_kml.isChecked()
         add_to_map = chk_add.isChecked()
 
-        features, fields = [], [
-            QgsField("quality", QVariant.Int), QgsField("sats", QVariant.Int),
-            QgsField("hdop", QVariant.Double), QgsField("latitude", QVariant.Double),
-            QgsField("longitude", QVariant.Double), QgsField("altitude", QVariant.Double),
-            QgsField("timestamp", QVariant.String)
+        fields = [
+            QgsField("quality", QVariant.Int),
+            QgsField("sats", QVariant.Int),
+            QgsField("hdop", QVariant.Double),
+            QgsField("latitude", QVariant.Double),
+            QgsField("longitude", QVariant.Double),
+            QgsField("altitude", QVariant.Double),
+            QgsField("timestamp", QVariant.String),
         ]
+
+        features = []
 
         with open(file_path, 'r') as file:
             for line in file:
@@ -104,6 +109,35 @@ class NmeaVisualizerPlugin:
         pr.addAttributes(fields)
         layer.updateFields()
         pr.addFeatures(features)
+
+        if not features:
+            QMessageBox.information(None, "No data", "No valid GGA sentences found.")
+            return
+
+        # --- Apply categorized renderer by "quality": 4=green, 5=orange, others=red ---
+        try:
+            # Base/default symbol (for 'others')
+            default_symbol = QgsSymbol.defaultSymbol(layer.geometryType())
+            default_symbol.setColor(QColor(200, 0, 0))  # red
+            categories = []
+
+            # Category: quality == 4 (green)
+            sym4 = QgsSymbol.defaultSymbol(layer.geometryType())
+            sym4.setColor(QColor(0, 160, 0))
+            categories.append(QgsRendererCategory(4, sym4, "RTK fix (4)"))
+
+            # Category: quality == 5 (orange)
+            sym5 = QgsSymbol.defaultSymbol(layer.geometryType())
+            sym5.setColor(QColor(230, 140, 0))
+            categories.append(QgsRendererCategory(5, sym5, "RTK float (5)"))
+
+            renderer = QgsCategorizedSymbolRenderer("quality", categories)
+            # Set default (others) symbol to red
+            renderer.setSourceSymbol(default_symbol)
+            layer.setRenderer(renderer)
+        except Exception as e:
+            # Renderer application is non-critical; continue even if it fails
+            pass
 
         if add_to_map:
             QgsProject.instance().addMapLayer(layer)
